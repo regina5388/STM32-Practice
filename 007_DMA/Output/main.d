@@ -1,7 +1,7 @@
 ..\..\output\main.o: ..\..\User\main.c
 ..\..\output\main.o: ..\..\Libraries\CMSIS\stm32f10x.h
 ..\..\output\main.o: ..\..\Libraries\CMSIS\core_cm3.h
-..\..\output\main.o: D:\Keil_v5.36\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\main.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
 ..\..\output\main.o: ..\..\User\stm32f10x_conf.h
 ..\..\output\main.o: ..\..\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h
@@ -32,5 +32,5 @@
 ..\..\output\main.o: ..\..\User\Inc\bsp_key.h
 ..\..\output\main.o: ..\..\User\Inc\bsp_rccclkconfig.h
 ..\..\output\main.o: ..\..\User\Inc\bsp_uart.h
-..\..\output\main.o: D:\Keil_v5.36\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\main.o: ..\..\User\Inc\bsp_dma_uart.h
