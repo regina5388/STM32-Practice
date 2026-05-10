@@ -65,6 +65,8 @@ void SPI_FLASH_Init(void)
 }
 
 
+
+
 /**
   * @brief  Sends one byte through SPI and returns the byte received at the same time.
   * @param  byte: The byte to be sent through SPI.
@@ -98,6 +100,7 @@ static u8 SPI_Flash_SendByte(u8 byte)
 	return SPI_I2S_ReceiveData(FLASH_SPIx);
 
 }
+
 
 
 /**
@@ -407,3 +410,21 @@ void SPI_Flash_BufferRead(u8 *pBuffer, u32 ReadAddress, u16 NumByteToRead)
 	
 	SPI_FLASH_CS_HIGH();
 }
+
+/**
+  * @brief  Wake up device from power down mode
+  * @retval None
+  */
+
+void SPI_Flash_WakeUp(void) 
+{
+
+  SPI_FLASH_CS_LOW();
+
+
+  SPI_Flash_SendByte(W25X_ReleasePowerDown);
+
+
+  SPI_FLASH_CS_HIGH();
+}   
+

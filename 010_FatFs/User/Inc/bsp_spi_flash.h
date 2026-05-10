@@ -77,7 +77,8 @@ u32 SPI_Flash_ReadID(void);
 u32 SPI_Flash_ReadDeviceID(void);
 void SPI_Flash_SectorErase(u32 SectorAddress);
 void SPI_Flash_BufferWrite(u8 *pBuffer, u32 WriteAddress, u16 NumByteToWrite);
-void SPI_Flash_BufferRead(u8 *pBuffer, u32 ReadAddress, u16 NumByteToRead);										  
+void SPI_Flash_BufferRead(u8 *pBuffer, u32 ReadAddress, u16 NumByteToRead);	
+void SPI_Flash_WakeUp(void);										  
 #endif
 
 										  

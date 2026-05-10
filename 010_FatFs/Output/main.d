@@ -36,3 +36,5 @@
 ..\..\output\main.o: ..\..\User\Inc\bsp_dma_uart.h
 ..\..\output\main.o: ..\..\User\Inc\bsp_i2c.h
 ..\..\output\main.o: ..\..\User\Inc\bsp_spi_flash.h
+..\..\output\main.o: ..\..\User\FatFS\ff.h
+..\..\output\main.o: ..\..\User\FatFS\ffconf.h

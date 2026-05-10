@@ -9,15 +9,15 @@
 
 #include "ff.h"			/* Basic definitions of FatFs */
 #include "diskio.h"		/* Declarations FatFs MAI */
+#include "../USER/Inc/bsp_spi_flash.h"
 
 /* Example: Declarations of the platform and disk functions in the project */
-#include "platform.h"
-#include "storage.h"
+//#include "platform.h"
+//#include "storage.h"
 
 /* Example: Mapping of physical drive number for each drive */
-#define DEV_FLASH	0	/* Map FTL to physical drive 0 */
-#define DEV_MMC		1	/* Map MMC/SD card to physical drive 1 */
-#define DEV_USB		2	/* Map USB MSD to physical drive 2 */
+#define ATA			0	/* For SD Card*/
+#define SPI_FLASH	1	/* External SPI chip */
 
 
 /*-----------------------------------------------------------------------*/
@@ -28,30 +28,24 @@ DSTATUS disk_status (
 	BYTE pdrv		/* Physical drive nmuber to identify the drive */
 )
 {
-	DSTATUS stat;
-	int result;
+	DSTATUS stat = STA_NOINIT;
 
 	switch (pdrv) {
-	case DEV_RAM :
-		result = RAM_disk_status();
+	case ATA :
 
 		// translate the reslut code here
 
 		return stat;
 
-	case DEV_MMC :
-		result = MMC_disk_status();
-
-		// translate the reslut code here
-
-		return stat;
-
-	case DEV_USB :
-		result = USB_disk_status();
-
-		// translate the reslut code here
+	case SPI_FLASH :
+		if(SPI_Flash_ReadID() == sFLASH_ID){
+			stat &= ~STA_NOINIT; //stat = 0;
+		}else{
+			stat = STA_NOINIT;
+		}
 
 		return stat;
+
 	}
 	return STA_NOINIT;
 }
@@ -66,29 +60,24 @@ DSTATUS disk_initialize (
 	BYTE pdrv				/* Physical drive nmuber to identify the drive */
 )
 {
-	DSTATUS stat;
-	int result;
-
+	DSTATUS stat = STA_NOINIT;
+	int i;
+	
 	switch (pdrv) {
-	case DEV_RAM :
-		result = RAM_disk_initialize();
+	case ATA :
 
 		// translate the reslut code here
 
 		return stat;
 
-	case DEV_MMC :
-		result = MMC_disk_initialize();
+	case SPI_FLASH :
 
-		// translate the reslut code here
-
-		return stat;
-
-	case DEV_USB :
-		result = USB_disk_initialize();
-
-		// translate the reslut code here
-
+		SPI_FLASH_Init();
+		i = 500;
+		while(i--);// Short delay
+		
+		SPI_Flash_WakeUp();
+		stat = disk_status(SPI_FLASH);
 		return stat;
 	}
 	return STA_NOINIT;
@@ -107,36 +96,23 @@ DRESULT disk_read (
 	UINT count		/* Number of sectors to read */
 )
 {
-	DRESULT res;
-	int result;
+	DRESULT res = RES_PARERR;
 
 	switch (pdrv) {
-	case DEV_RAM :
+	case ATA :
+		
 		// translate the arguments here
-
-		result = RAM_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
+		
 		return res;
 
-	case DEV_MMC :
-		// translate the arguments here
-
-		result = MMC_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
+	case SPI_FLASH :
+		
+		sector += 512; //Avoid writing into the first 6MB room (reserved for other stuff)
+		SPI_Flash_BufferRead(buff,sector<<12, count<<12); //Sector Size is 4096
+		res = RES_OK;
+		
 		return res;
 
-	case DEV_USB :
-		// translate the arguments here
-
-		result = USB_disk_read(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
 	}
 
 	return RES_PARERR;
@@ -158,35 +134,22 @@ DRESULT disk_write (
 )
 {
 	DRESULT res;
-	int result;
 
 	switch (pdrv) {
-	case DEV_RAM :
+	case ATA :
 		// translate the arguments here
-
-		result = RAM_disk_write(buff, sector, count);
-
-		// translate the reslut code here
 
 		return res;
 
-	case DEV_MMC :
-		// translate the arguments here
-
-		result = MMC_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
+	case SPI_FLASH :
+		//important! Erase before writing
+		sector += 512;
+		SPI_Flash_SectorErase(sector <<12);
+		SPI_Flash_BufferWrite((u8 *)buff, sector <<12, count << 12);
+		res = RES_OK;
+	
 		return res;
 
-	case DEV_USB :
-		// translate the arguments here
-
-		result = USB_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
 	}
 
 	return RES_PARERR;
@@ -205,27 +168,36 @@ DRESULT disk_ioctl (
 	void *buff		/* Buffer to send/receive control data */
 )
 {
-	DRESULT res;
-	int result;
+	DRESULT res = RES_PARERR;
 
 	switch (pdrv) {
-	case DEV_RAM :
+	case ATA :
 
 		// Process of the command for the RAM drive
 
 		return res;
 
-	case DEV_MMC :
-
-		// Process of the command for the MMC/SD card
+	case SPI_FLASH :
+		switch(cmd){
+			
+			case GET_SECTOR_COUNT:
+				* (DWORD * )buff = 1536;
+				res = RES_OK;
+				return res;
+			
+			case GET_SECTOR_SIZE:
+				* (DWORD * )buff = 4096;
+				res = RES_OK;
+				return res;
+			
+			case GET_BLOCK_SIZE:		
+				* (DWORD * )buff = 1;
+				res = RES_OK;
+				return res;
+		}
 
 		return res;
 
-	case DEV_USB :
-
-		// Process of the command the USB drive
-
-		return res;
 	}
 
 	return RES_PARERR;

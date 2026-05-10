@@ -606,6 +606,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\FatFS\ff.c</FilePath>
             </File>
+            <File>
+              <FileName>ffunicode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>C:\Users\Chenyan\Downloads\ff16\source\ffunicode.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
